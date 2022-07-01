@@ -1,12 +1,13 @@
 import '../App.css';
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Modal, Spinner } from 'react-bootstrap';
 
 function ListBatteries() {
     const [batteries, setBatteries] = useState([]);
     const [show, setShow] = useState(false);
     const [modalData, setModalData] = useState({});
+    const [loading, setLoading] = useState(true);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -18,6 +19,7 @@ function ListBatteries() {
             .then(response => {
                 console.log(response)
                 setBatteries(response)
+                setLoading(false)
             })
     }, [])
     /*
@@ -46,42 +48,49 @@ function ListBatteries() {
      */
     return (
         <div className='ListBatteries'>
+            {loading &&
+                <Spinner animation="border" role="status" bsClass='loading-spinner'>
+                    <span className="visually-hidden">Loading...</span>
+                </Spinner>
+            }
             <table>
-                <tr>
-                    <th>
+                {!loading &&
+                    <tr>
+                        <th>
 
-                    </th>
-                    <th>
-                        Status
-                    </th>
-                    <th>
-                        Capacity
-                    </th>
-                    <th>
-                        Connection Status
-                    </th>
-                    <th>
-                        End of Life Date
-                    </th>
-                    <th>
-                        Last Connection Time
-                    </th>
-                    <th>
-                        Location
-                    </th>
-                    <th>
-                        Recent Issues
-                    </th>
-                    <th>
-                        State of Charge
-                    </th>
-                    <th>
-                        State of Health
-                    </th>
-                    <th>
-                        Voltage
-                    </th>
-                </tr>
+                        </th>
+                        <th>
+                            Status
+                        </th>
+                        <th>
+                            Capacity
+                        </th>
+                        <th>
+                            Connection Status
+                        </th>
+                        <th>
+                            End of Life Date
+                        </th>
+                        <th>
+                            Last Connection Time
+                        </th>
+                        <th>
+                            Location
+                        </th>
+                        <th>
+                            Recent Issues
+                        </th>
+                        <th>
+                            State of Charge
+                        </th>
+                        <th>
+                            State of Health
+                        </th>
+                        <th>
+                            Voltage
+                        </th>
+                    </tr>
+                }
                 <td>
                     <Modal show={show} onHide={handleClose}>
                         <Modal.Header closeButton>
@@ -102,7 +111,7 @@ function ListBatteries() {
                         (battery) =>
                         (<tr key={battery.id}>
                             <td>
-                                <Button variant="primary" onClick={()=>{
+                                <Button variant="primary" onClick={() => {
                                     handleShow();
                                     setModalData(battery)
                                 }}>
