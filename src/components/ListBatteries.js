@@ -1,8 +1,15 @@
 import '../App.css';
 import React, { useState, useEffect } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Button, Modal } from 'react-bootstrap';
 
 function ListBatteries() {
     const [batteries, setBatteries] = useState([]);
+    const [show, setShow] = useState(false);
+    const [modalData, setModalData] = useState({});
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
     const url = 'https://f2byongc84.execute-api.eu-central-1.amazonaws.com/webdev_test_fetch_batteries'
 
     useEffect(() => {
@@ -42,6 +49,9 @@ function ListBatteries() {
             <table>
                 <tr>
                     <th>
+
+                    </th>
+                    <th>
                         Status
                     </th>
                     <th>
@@ -72,11 +82,34 @@ function ListBatteries() {
                         Voltage
                     </th>
                 </tr>
+                <td>
+                    <Modal show={show} onHide={handleClose}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Battery {modalData.id} details</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            insert graph here
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={handleClose}>
+                                Close
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+                </td>
                 {
                     batteries.map(
                         (battery) =>
                         (<tr key={battery.id}>
-                            <td>{battery.status}</td>
+                            <td>
+                                <Button variant="primary" onClick={()=>{
+                                    handleShow();
+                                    setModalData(battery)
+                                }}>
+                                    show details
+                                </Button>
+                            </td>
+                            <td>{battery.batteryStatus}</td>
                             <td>{battery.capacity}</td>
                             <td>{battery.connectionStatus}</td>
                             <td>{battery.endOfLifeDate}</td>
