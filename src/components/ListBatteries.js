@@ -2,6 +2,7 @@ import '../App.css';
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Modal, Spinner } from 'react-bootstrap';
+import Chart from './Chart';
 
 function ListBatteries() {
     const [batteries, setBatteries] = useState([]);
@@ -49,7 +50,7 @@ function ListBatteries() {
     return (
         <div className='ListBatteries'>
             {loading &&
-                <Spinner animation="border" role="status" bsClass='loading-spinner'>
+                <Spinner animation="border" role="status">
                     <span className="visually-hidden">Loading...</span>
                 </Spinner>
             }
@@ -97,7 +98,8 @@ function ListBatteries() {
                             <Modal.Title>Battery {modalData.id} details</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            insert graph here
+                            {modalData.stateOfCharge && <Chart timestamp={modalData.lastConnectionTime} stateOfCharge={modalData.stateOfCharge} deadline={modalData.endOfLifeDate}/>}
+                            {!modalData.stateOfCharge && <p>state of charge data is not available</p>}
                         </Modal.Body>
                         <Modal.Footer>
                             <Button variant="secondary" onClick={handleClose}>
