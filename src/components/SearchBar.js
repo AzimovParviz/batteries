@@ -12,7 +12,13 @@ function SearchBar(props) {
                 </select>
             </form>
             <input type='text' placeholder='sory by id' onChange={props.handleIdChange}></input>
-            <input type='number' placeholder='sory by connection status' onChange={props.handleConChange}></input>
+            <form onChange={props.handleConChange}>
+                <select>
+                    <option value={'online'}>online</option>
+                    <option value={'pending'}>pending</option>
+                    <option value={'offline'}>offline</option>
+                </select>
+            </form>
             <input type='number' placeholder='sory by state of charge' onChange={props.handleChargeChange}></input>
         </div>
     )

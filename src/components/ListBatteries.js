@@ -1,7 +1,7 @@
 import '../App.css';
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Modal, Spinner } from 'react-bootstrap';
+import { Button, Modal, Spinner, Table } from 'react-bootstrap';
 import Chart from './Chart';
 import SearchBar from './SearchBar';
 
@@ -24,40 +24,70 @@ function ListBatteries() {
             .then(res => res.json())
             .then(response => {
                 console.log(response)
+                for (var i = 0; i<response.length;i++)
+                {
+                    switch(response[i].connectionStatusId) {
+                        case 1:
+                            response[i].connectionStatusId = 'online'
+                            break;
+                        case 2:
+                            response[i].connectionStatusId = 'pending'
+                            break;
+                        case 3:
+                            response[i].connectionStatusId = 'offline'
+                            break;
+                        default:
+                            break;
+                    }
+                    for (var j = 0; j<response[i].recentIssues.length;j++)
+                    {
+                        switch(response[i].recentIssues[j]) {
+                            case 1:
+                                response[i].recentIssues[j] = 'deep discharge'
+                                break;
+                            case 2:
+                                response[i].recentIssues[j] = 'overheating'
+                                break;
+                            case 3:
+                                response[i].recentIssues[j] = 'unknown anomaly'
+                                break;
+                            case 4:
+                                response[i].recentIssues[j] = 'missing data'
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
                 setBatteries(response)
                 setLoading(false)
             })
     }, [])
     /*
+    capacity: 50
     
-    batteryStatus: 1
+    connectionStatus: 2
     
-    capacity: 25
+    connectionStatusId: 2
     
-    connectionStatus: 3
+    id: "D-62456"
     
-    endOfLifeDate: "2025-01-20T02:43:52.464Z" not a thing anymore :0
+    lastConnectionTime: "2022-07-02T11:12:33.083Z"
     
-    id: "B-30964"
+    location: "Warehouse"
     
-    lastConnectionTime: "2022-07-01T08:51:48.464Z"
-    
-    location: "Port"
-    
-    recentIssues: [4] (1)
+    recentIssues: [] (0)
     
     stateOfCharge: null
     
-    stateOfHealth: 52
+    stateOfHealth: 72
     
-    voltage: 24
+    voltage: 36
      */
     var filtered = batteries;
-    if (termID || termLocation || termConnection || termCharge) filtered = batteries.filter(resp => {
-        return resp.id === termID || resp.location === termLocation || resp.connectionStatus == termConnection || resp.stateOfCharge == termCharge;
+    if (termID || termLocation || termConnection || termCharge) filtered = batteries.filter(bat => {
+        return bat.id === termID || bat.location === termLocation || bat.connectionStatusId == termConnection || bat.stateOfCharge == termCharge;
     })
-    console.log(termCharge)
-    console.log(termConnection)
     return (
         <div className='ListBatteries'>
             {loading &&
@@ -66,95 +96,101 @@ function ListBatteries() {
                 </Spinner>
             }
             {!loading &&
-                <><SearchBar
-                    handleLocChange={e => setTermLocation(e.target.value)}
-                    handleIdChange={e => setTermID(e.target.value)}
-                    handleChargeChange={e => setTermCharge(e.target.value)}
-                    handleConChange={e => setTermConnection(e.target.value)}
+                <>
+                    <SearchBar
+                        handleLocChange={e => setTermLocation(e.target.value)}
+                        handleIdChange={e => setTermID(e.target.value)}
+                        handleChargeChange={e => setTermCharge(e.target.value)}
+                        handleConChange={e => setTermConnection(e.target.value)}
                     /><Button onClick={() => {
                         setTermLocation('');
                         setTermCharge('');
                         setTermConnection('');
                         setTermID('');
-                    } }>RESET</Button></>
+                    }}>RESET</Button>
+                </>
             }
-            <table>
+            <Table striped bordered hover>
                 {!loading &&
-                    <tr>
-                        <th>
-
-                        </th>
-                        <th>
-                            Status
-                        </th>
-                        <th>
-                            Capacity
-                        </th>
-                        <th>
-                            Connection Status
-                        </th>
-                        <th>
-                            Last Connection Time
-                        </th>
-                        <th>
-                            Location
-                        </th>
-                        <th>
-                            Recent Issues
-                        </th>
-                        <th>
-                            State of Charge
-                        </th>
-                        <th>
-                            State of Health
-                        </th>
-                        <th>
-                            Voltage
-                        </th>
-                    </tr>
+                    <thead>
+                        <tr>
+                            <th>
+                                ID
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th>
+                                Capacity
+                            </th>
+                            <th>
+                                Connection Status
+                            </th>
+                            <th>
+                                Last Connection Time
+                            </th>
+                            <th>
+                                Location
+                            </th>
+                            <th>
+                                Recent Issues
+                            </th>
+                            <th>
+                                State of Charge
+                            </th>
+                            <th>
+                                State of Health
+                            </th>
+                            <th>
+                                Voltage
+                            </th>
+                        </tr>
+                    </thead>
                 }
-                <td>
-                    <Modal show={show} onHide={handleClose}>
-                        <Modal.Header closeButton>
-                            <Modal.Title>Battery {modalData.id} details</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            {modalData.stateOfCharge && <p>hover for details</p>}
-                            {modalData.stateOfCharge && <Chart timestamp={modalData.lastConnectionTime} stateOfCharge={modalData.stateOfCharge} deadline={modalData.endOfLifeDate} />}
-                            {!modalData.stateOfCharge && <p>state of charge data is not available</p>}
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="secondary" onClick={handleClose}>
-                                Close
-                            </Button>
-                        </Modal.Footer>
-                    </Modal>
-                </td>
-                {
-                    filtered.map(
-                        (battery) =>
-                        (<tr key={battery.id}>
-                            <td>
-                                <Button variant="primary" onClick={() => {
-                                    handleShow();
-                                    setModalData(battery)
-                                }}>
-                                    show details
+                <tbody>
+                    <td>
+                        <Modal show={show} onHide={handleClose}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Battery {modalData.id} details</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                {modalData.stateOfCharge && <p>hover for details</p>}
+                                {modalData.stateOfCharge && <Chart timestamp={modalData.lastConnectionTime} stateOfCharge={modalData.stateOfCharge} deadline={modalData.endOfLifeDate} />}
+                                {!modalData.stateOfCharge && <p>state of charge data is not available</p>}
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={handleClose}>
+                                    Close
                                 </Button>
-                            </td>
-                            <td>{battery.batteryStatus}</td>
-                            <td>{battery.capacity}</td>
-                            <td>{battery.connectionStatus}</td>
-                            <td>{battery.lastConnectionTime}</td>
-                            <td>{battery.location}</td>
-                            <td>{battery.recentIssues}</td>
-                            <td>{battery.stateOfCharge}</td>
-                            <td>{battery.stateOfHealth}</td>
-                            <td>{battery.voltage}</td>
-                        </tr>)
-                    )
-                }
-            </table>
+                            </Modal.Footer>
+                        </Modal>
+                    </td>
+                    {
+                        filtered.map(
+                            (battery) =>
+                            (<tr key={battery.id}>
+                                <td>
+                                    <Button variant="primary" onClick={() => {
+                                        handleShow();
+                                        setModalData(battery)
+                                    }}>
+                                        {battery.id}
+                                    </Button>
+                                </td>
+                                <td>{battery.batteryStatus}</td>
+                                <td>{battery.capacity}</td>
+                                <td>{battery.connectionStatusId}</td>
+                                <td>{battery.lastConnectionTime}</td>
+                                <td>{battery.location}</td>
+                                <td>{battery.recentIssues.join(', ')}</td>
+                                <td>{battery.stateOfCharge}</td>
+                                <td>{battery.stateOfHealth}</td>
+                                <td>{battery.voltage}</td>
+                            </tr>)
+                        )
+                    }
+                </tbody>
+            </Table>
         </div>
     )
 }
