@@ -3,12 +3,17 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Modal, Spinner } from 'react-bootstrap';
 import Chart from './Chart';
+import SearchBar from './SearchBar';
 
 function ListBatteries() {
-    const [batteries, setBatteries] = useState([]);
-    const [show, setShow] = useState(false);
-    const [modalData, setModalData] = useState({});
-    const [loading, setLoading] = useState(true);
+    const [batteries, setBatteries] = useState([]);//array of all batteries
+    const [show, setShow] = useState(false);//for the modal with details of each individual battery
+    const [modalData, setModalData] = useState({});//to display the data of a battery in the modal
+    const [loading, setLoading] = useState(true);//to know when to display the loading icon
+    const [termID, setTermID] = useState('');//for the search terms used for filtering
+    const [termLocation, setTermLocation] = useState('');
+    const [termConnection, setTermConnection] = useState(0);
+    const [termCharge, setTermCharge] = useState(0);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -31,7 +36,7 @@ function ListBatteries() {
     
     connectionStatus: 3
     
-    endOfLifeDate: "2025-01-20T02:43:52.464Z"
+    endOfLifeDate: "2025-01-20T02:43:52.464Z" not a thing anymore :0
     
     id: "B-30964"
     
@@ -47,12 +52,31 @@ function ListBatteries() {
     
     voltage: 24
      */
+    var filtered = batteries;
+    if (termID || termLocation || termConnection || termCharge) filtered = batteries.filter(resp => {
+        return resp.id === termID || resp.location === termLocation || resp.connectionStatus == termConnection || resp.stateOfCharge == termCharge;
+    })
+    console.log(termCharge)
+    console.log(termConnection)
     return (
         <div className='ListBatteries'>
             {loading &&
                 <Spinner animation="border" role="status">
                     <span className="visually-hidden">Loading...</span>
                 </Spinner>
+            }
+            {!loading &&
+                <><SearchBar
+                    handleLocChange={e => setTermLocation(e.target.value)}
+                    handleIdChange={e => setTermID(e.target.value)}
+                    handleChargeChange={e => setTermCharge(e.target.value)}
+                    handleConChange={e => setTermConnection(e.target.value)}
+                    /><Button onClick={() => {
+                        setTermLocation('');
+                        setTermCharge('');
+                        setTermConnection('');
+                        setTermID('');
+                    } }>RESET</Button></>
             }
             <table>
                 {!loading &&
@@ -68,9 +92,6 @@ function ListBatteries() {
                         </th>
                         <th>
                             Connection Status
-                        </th>
-                        <th>
-                            End of Life Date
                         </th>
                         <th>
                             Last Connection Time
@@ -98,7 +119,8 @@ function ListBatteries() {
                             <Modal.Title>Battery {modalData.id} details</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            {modalData.stateOfCharge && <Chart timestamp={modalData.lastConnectionTime} stateOfCharge={modalData.stateOfCharge} deadline={modalData.endOfLifeDate}/>}
+                            {modalData.stateOfCharge && <p>hover for details</p>}
+                            {modalData.stateOfCharge && <Chart timestamp={modalData.lastConnectionTime} stateOfCharge={modalData.stateOfCharge} deadline={modalData.endOfLifeDate} />}
                             {!modalData.stateOfCharge && <p>state of charge data is not available</p>}
                         </Modal.Body>
                         <Modal.Footer>
@@ -109,7 +131,7 @@ function ListBatteries() {
                     </Modal>
                 </td>
                 {
-                    batteries.map(
+                    filtered.map(
                         (battery) =>
                         (<tr key={battery.id}>
                             <td>
@@ -123,7 +145,6 @@ function ListBatteries() {
                             <td>{battery.batteryStatus}</td>
                             <td>{battery.capacity}</td>
                             <td>{battery.connectionStatus}</td>
-                            <td>{battery.endOfLifeDate}</td>
                             <td>{battery.lastConnectionTime}</td>
                             <td>{battery.location}</td>
                             <td>{battery.recentIssues}</td>
