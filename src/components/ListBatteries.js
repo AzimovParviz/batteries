@@ -85,9 +85,14 @@ function ListBatteries() {
     voltage: 36
      */
     var filtered = batteries;
-    if (termID || termLocation || termConnection || termCharge) filtered = batteries.filter(bat => {
+    /* if (termID || termLocation || termConnection || termCharge) filtered = batteries.filter(bat => {
         return bat.id === termID || bat.location === termLocation || bat.connectionStatusId == termConnection || bat.stateOfCharge == termCharge;
     })
+ */
+    if (termID) filtered = filtered.filter(bat => bat.id === termID)
+    if (termLocation) filtered = filtered.filter(bat => bat.location === termLocation)
+    if (termConnection) filtered = filtered.filter(bat => bat.connectionStatusId == termConnection)
+    if (termCharge) filtered = filtered.filter(bat => bat.stateOfCharge == termCharge)
     return (
         <div className='ListBatteries'>
             {loading &&
@@ -110,15 +115,12 @@ function ListBatteries() {
                     }}>RESET</Button>
                 </>
             }
-            <Table striped bordered hover>
+            <Table striped bordered hover responsive>
                 {!loading &&
                     <thead>
                         <tr>
                             <th>
                                 ID
-                            </th>
-                            <th>
-                                Status
                             </th>
                             <th>
                                 Capacity
@@ -177,7 +179,6 @@ function ListBatteries() {
                                         {battery.id}
                                     </Button>
                                 </td>
-                                <td>{battery.batteryStatus}</td>
                                 <td>{battery.capacity}</td>
                                 <td>{battery.connectionStatusId}</td>
                                 <td>{battery.lastConnectionTime}</td>
