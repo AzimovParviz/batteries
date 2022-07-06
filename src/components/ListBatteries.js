@@ -107,7 +107,8 @@ function ListBatteries() {
                         handleIdChange={e => setTermID(e.target.value)}
                         handleChargeChange={e => setTermCharge(e.target.value)}
                         handleConChange={e => setTermConnection(e.target.value)}
-                    /><Button onClick={() => {
+                    />
+                    <Button onClick={() => {
                         setTermLocation('');
                         setTermCharge('');
                         setTermConnection('');
@@ -156,7 +157,8 @@ function ListBatteries() {
                                 <Modal.Title>Battery {modalData.id} details</Modal.Title>
                             </Modal.Header>
                             <Modal.Body>
-                                {modalData.stateOfCharge && <p>hover for details</p>}
+                                {modalData.stateOfCharge && <div className='battery'><div className='batteryLevel' style={{width:modalData.stateOfCharge*50/100}}></div></div>}
+                                {modalData.stateOfCharge && <p>hover on the graph for details</p>}
                                 {modalData.stateOfCharge && <Chart timestamp={modalData.lastConnectionTime} stateOfCharge={modalData.stateOfCharge} deadline={modalData.endOfLifeDate} />}
                                 {!modalData.stateOfCharge && <p>state of charge data is not available</p>}
                             </Modal.Body>
