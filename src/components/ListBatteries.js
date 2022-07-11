@@ -1,7 +1,7 @@
 import '../App.css';
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Spinner, Table } from 'react-bootstrap';
+import { Button, Spinner } from 'react-bootstrap';
 import SearchBar from './SearchBar';
 import BatteryTable from './BatteryTable';
 
