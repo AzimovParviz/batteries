@@ -1,6 +1,6 @@
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Modal, Table } from 'react-bootstrap';
+import { Button, Modal, Table, Spinner } from 'react-bootstrap';
 import Chart from './Chart';
 import React, { useState, useEffect, useCallback } from 'react';
 
@@ -8,6 +8,7 @@ function BatteryTable(props) {
     const [bat, setBat] = useState({})
     const [show, setShow] = useState(false);//for the modal with details of each individual battery
     const [modalData, setModalData] = useState({});//to display the data of a single chosen battery in the modal
+    const [loadingbat, setLoadingbat] = useState(true)
     /* for individual entity view display */
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -32,13 +33,14 @@ function BatteryTable(props) {
     const batteryCache = new Map()
     const fetchRequest = async (id) => {
         if (!batteryCache.has(id)) {
-          batteryCache.set(id, fetch(url + id).then(res => res.text()))
+            batteryCache.set(id, fetch(url + id).then(res => res.json()))
         }
         const response = await batteryCache.get(id)
         setBat(response)
+        setLoadingbat(false)
         console.log(bat)
-      }
-    
+    }
+
     return (
         <Table striped bordered hover responsive>
             {/* conditional rendering so the table headers won't appear while waiting for the API response */
@@ -82,12 +84,17 @@ function BatteryTable(props) {
                             <Modal.Title>Battery {modalData.id} details</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
+                            {loadingbat &&
+                                <Spinner animation="border" role="status">
+                                    <span className="visually-hidden">Loading...</span>
+                                </Spinner>
+                            }
                             {/* conditional rendering to avoid displaying empty graphs and battery level when data is not available */}
-                            {modalData.stateOfCharge && <div className='battery'><div className='batteryLevel' style={{ width: modalData.stateOfCharge * 50 / 100 }}></div><span>{modalData.stateOfCharge} %</span></div>}
+                            {bat.stateOfCharge && <div className='battery'><div className='batteryLevel' style={{ width: modalData.stateOfCharge * 50 / 100 }}></div><span>{modalData.stateOfCharge} %</span></div>}
                             <br></br>
-                            {modalData.stateOfCharge && <p>hover on the graph for details</p>}
-                            {modalData.stateOfCharge && <Chart timestamp={bat.measurements} stateOfCharge={bat.stateOfCharge} /* deadline={modalData.endOfLifeDate}  *//>}
-                            {!modalData.stateOfCharge && <p>state of charge data is not available</p>}
+                            {bat.stateOfCharge && <p>hover on the graph for details</p>}
+                            {bat.stateOfCharge && <Chart stamp={bat.measurements} stateOfCharge={bat.stateOfCharge} /* deadline={modalData.endOfLifeDate} */ />}
+                            {!bat.stateOfCharge && <p>state of charge data is not available</p>}
                         </Modal.Body>
                         <Modal.Footer>
                             <Button className='button' variant="secondary" onClick={handleClose}>
@@ -103,6 +110,7 @@ function BatteryTable(props) {
                             <td>
                                 <Button className='button' variant="outline-info" size='sm' onClick={() => {
                                     handleShow()
+                                    setLoadingbat(true)
                                     setModalData(battery)
                                     fetchRequest(battery.id)
                                 }}>
