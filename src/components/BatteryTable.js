@@ -2,7 +2,8 @@ import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Modal, Table, Spinner } from 'react-bootstrap';
 import Chart from './Chart';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
+import BatteryDetails from './BatteryDetails';
 
 function BatteryTable(props) {
     const [bat, setBat] = useState({})
@@ -14,22 +15,6 @@ function BatteryTable(props) {
     const handleShow = () => setShow(true);
 
     const url = 'https://f2byongc84.execute-api.eu-central-1.amazonaws.com/webdev_test_fetch_batteries?id=' //url for fetching individual battery info
-    /* useEffect(() => {
-        if (show) {
-            console.log(modalData.id)
-            fetch(url + modalData.id)
-                .then(res => {
-                    res.json()
-                    res.text()
-                })
-                .then(response => {
-                    setBat(response)
-                    console.log(response)
-                })
-
-        }
-    }, [])
- */
     const batteryCache = new Map()
     const fetchRequest = async (id) => {
         if (!batteryCache.has(id)) {
@@ -79,7 +64,7 @@ function BatteryTable(props) {
             }
             <tbody>
                 <td>
-                    <Modal show={show} onHide={handleClose}>
+                    <Modal show={show} onHide={handleClose} size='lg' scrollable={true}>
                         <Modal.Header closeButton>
                             <Modal.Title>Battery {modalData.id} details</Modal.Title>
                         </Modal.Header>
@@ -90,9 +75,9 @@ function BatteryTable(props) {
                                 </Spinner>
                             }
                             {/* conditional rendering to avoid displaying empty graphs and battery level when data is not available */}
-                            {bat.stateOfCharge && <div className='battery'><div className='batteryLevel' style={{ width: modalData.stateOfCharge * 50 / 100 }}></div><span>{modalData.stateOfCharge} %</span></div>}
+                            {bat.stateOfCharge && <BatteryDetails battery={bat}/>}
                             <br></br>
-                            {bat.stateOfCharge && <p>hover on the graph for details</p>}
+                            {bat.stateOfCharge && <p>scroll and hover on the graph for details</p>}
                             {bat.stateOfCharge && <Chart stamp={bat.measurements} stateOfCharge={bat.stateOfCharge} /* deadline={modalData.endOfLifeDate} */ />}
                             {!bat.stateOfCharge && <p>state of charge data is not available</p>}
                         </Modal.Body>
