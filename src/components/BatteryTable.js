@@ -75,11 +75,11 @@ function BatteryTable(props) {
                                 </Spinner>
                             }
                             {/* conditional rendering to avoid displaying empty graphs and battery level when data is not available */}
-                            {bat.stateOfCharge && <BatteryDetails battery={bat}/>}
+                            {bat && !loadingbat && <BatteryDetails battery={bat}/>}
                             <br></br>
                             {bat.stateOfCharge && <p>scroll and hover on the graph for details</p>}
                             {bat.stateOfCharge && <Chart stamp={bat.measurements} stateOfCharge={bat.stateOfCharge} /* deadline={modalData.endOfLifeDate} */ />}
-                            {!bat.stateOfCharge && <p>state of charge data is not available</p>}
+                            {!bat.stateOfCharge && !loadingbat && <p>state of charge data is not available</p>}
                         </Modal.Body>
                         <Modal.Footer>
                             <Button className='button' variant="secondary" onClick={handleClose}>
