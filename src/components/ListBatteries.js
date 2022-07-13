@@ -1,5 +1,5 @@
 import '../App.css';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Spinner } from 'react-bootstrap';
 import SearchBar from './SearchBar';
@@ -13,6 +13,8 @@ function ListBatteries() {
     const [termLocation, setTermLocation] = useState('');
     const [termConnection, setTermConnection] = useState(0);
     const [termCharge, setTermCharge] = useState(0);
+    const [page, setPage] = useState(1)
+    const loader = useRef(null);
 
     const url = 'https://f2byongc84.execute-api.eu-central-1.amazonaws.com/webdev_test_fetch_batteries'
     /* hook for the fetching resources from the api
@@ -61,6 +63,25 @@ function ListBatteries() {
                 setLoading(false)
             })
     }, [])
+
+
+    const handleObserver = useCallback ((batteries)=> {
+        const target = batteries[0]
+        if (target.isIntersecting) {
+            setPage((prev) => prev + 1)
+        }
+    }, [])
+
+    useEffect(() => {
+        const option = {
+            root: null,
+            rootMargin: "20px",
+            threshold: 0
+          };
+        const observer = new IntersectionObserver(handleObserver, option)
+        if (loader.current) observer.observe(loader.current)
+    }, [handleObserver]);
+
     /*
     capacity: 50
     
@@ -85,7 +106,7 @@ function ListBatteries() {
     /*
     to display updated list after search terms have been applied
      */
-    var filtered = batteries;
+    var filtered = batteries.slice(page-1, page * 25);
     if (termID) filtered = filtered.filter(bat => bat.id === termID)
     if (termLocation) filtered = filtered.filter(bat => bat.location === termLocation)
     if (termConnection) filtered = filtered.filter(bat => bat.connectionStatusId == termConnection)
@@ -116,6 +137,7 @@ function ListBatteries() {
                 </>
             }
             <BatteryTable filtered={filtered} loading={loading}/>
+            <div ref={loader}/>
         </div>
     )
 }

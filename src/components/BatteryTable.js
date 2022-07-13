@@ -2,7 +2,7 @@ import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Modal, Table, Spinner } from 'react-bootstrap';
 import Chart from './Chart';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import BatteryDetails from './BatteryDetails';
 
 function BatteryTable(props) {
@@ -10,6 +10,8 @@ function BatteryTable(props) {
     const [show, setShow] = useState(false);//for the modal with details of each individual battery
     const [modalData, setModalData] = useState({});//to display the data of a single chosen battery in the modal
     const [loadingbat, setLoadingbat] = useState(true)
+/*     const { loading, error, list } = useState(batteries) */
+   
     /* for individual entity view display */
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -17,7 +19,7 @@ function BatteryTable(props) {
     const url = 'https://f2byongc84.execute-api.eu-central-1.amazonaws.com/webdev_test_fetch_batteries?id=' //url for fetching individual battery info
     const batteryCache = new Map()
     const fetchRequest = async (id) => {
-        if (!batteryCache.has(id)) {
+    if (!batteryCache.has(id)) {
             batteryCache.set(id, fetch(url + id).then(res => res.json()))
         }
         const response = await batteryCache.get(id)
@@ -27,6 +29,7 @@ function BatteryTable(props) {
     }
 
     return (
+        <div>
         <Table striped bordered hover responsive>
             {/* conditional rendering so the table headers won't appear while waiting for the API response */
                 !props.loading &&
@@ -115,6 +118,7 @@ function BatteryTable(props) {
                 }
             </tbody>
         </Table>
+        </div>
     )
 }
 
