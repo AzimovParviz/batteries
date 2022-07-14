@@ -1,5 +1,4 @@
 import React from "react";
-import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import BatteryDetails from "./BatteryDetails";
 import { Spinner } from "react-bootstrap";
@@ -28,7 +27,7 @@ function Modal({ isShowing, hide, modalData, loading }) {
                         {modalData && !loading && <BatteryDetails battery={modalData} />}
                         <br></br>
                         {modalData.stateOfCharge && <p>scroll and hover on the graph for details</p>}
-                        {modalData.stateOfCharge && <Chart stamp={modalData.measurements} stateOfCharge={modalData.stateOfCharge} /* deadline={modalData.endOfLifeDate} */ />}
+                        {modalData.stateOfCharge && !loading && <Chart stamp={modalData.measurements} stateOfCharge={modalData.stateOfCharge} /* deadline={modalData.endOfLifeDate} */ />}
                         {!modalData.stateOfCharge && !loading && <p>state of charge data is not available</p>}
                     </div>
                 </div>

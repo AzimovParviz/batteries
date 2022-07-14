@@ -1,9 +1,7 @@
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Table, Spinner } from 'react-bootstrap';
-import Chart from './Chart';
-import React, { useState, useCallback } from 'react';
-import BatteryDetails from './BatteryDetails';
+import { Button } from 'react-bootstrap';
+import React, { useState } from 'react';
 import Modal from './Modal';
 
 function BatteryTable(props) {
@@ -35,7 +33,7 @@ function BatteryTable(props) {
 
     return (
         <div>
-            <Table striped bordered hover responsive>
+            <table>
                 {/* conditional rendering so the table headers won't appear while waiting for the API response */
                     !props.loading &&
                     <thead>
@@ -98,7 +96,7 @@ function BatteryTable(props) {
                         )
                     }
                 </tbody>
-            </Table>
+            </table>
             <Modal isShowing={isShowing} hide={toggle} modalData={bat} loading={loadingbat}>
             </Modal>
         </div>
