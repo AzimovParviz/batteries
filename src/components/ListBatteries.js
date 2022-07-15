@@ -109,7 +109,7 @@ function ListBatteries() {
     /*
     to display updated list after search terms have been applied
      */
-    var filtered = batteries.slice(page - 1, page * 25);
+    var filtered = batteries.slice(0, page * 25);
     if (termID) filtered = filtered.filter(bat => bat.id === termID)
     if (termLocation) filtered = filtered.filter(bat => bat.location === termLocation)
     if (termConnection) filtered = filtered.filter(bat => bat.connectionStatusId == termConnection)

@@ -27,7 +27,9 @@ voltage: 48
  */
     return (
         <div className='batteryDetails'>
-            {props.battery.stateOfCharge && <div className='battery'><div className='batteryLevel' style={{ width: props.battery.stateOfCharge * 50 / 100 }}></div><span>{props.battery.stateOfCharge} %</span></div>}
+            {props.battery.stateOfCharge>30 && <div className='battery'><div className='batteryLevel' style={{ width: props.battery.stateOfCharge * 50 / 100, backgroundColor: 'green' }}></div><span>{props.battery.stateOfCharge} %</span></div>}
+            {props.battery.stateOfCharge<=30 && props.battery.stateOfCharge>=15 && <div className='battery'><div className='batteryLevel' style={{ width: props.battery.stateOfCharge * 50 / 100, backgroundColor: 'yellow' }}></div><span>{props.battery.stateOfCharge} %</span></div>}
+            {props.battery.stateOfCharge<15 && props.battery.stateOfCharge && <div className='battery'><div className='batteryLevel' style={{ width: props.battery.stateOfCharge * 50 / 100, backgroundColor: 'red' }}></div><span>{props.battery.stateOfCharge} %</span></div>}
             <><br></br><span>capacity:</span></> {props.battery.capacity}
             {props.battery.stateOfHealth && <><br></br><span>state of health:</span></>} {props.battery.stateOfHealth}
             <br></br>
