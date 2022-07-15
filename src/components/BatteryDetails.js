@@ -2,8 +2,8 @@ import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function BatteryDetails(props) {
-        /*
-    capacity: 25
+    /*
+capacity: 25
 
 connectionStatus: 2
 
@@ -24,8 +24,8 @@ stateOfCharge: 67
 stateOfHealth: 66
 
 voltage: 48
-     */
-    return(
+ */
+    return (
         <div className='batteryDetails'>
             {props.battery.stateOfCharge && <div className='battery'><div className='batteryLevel' style={{ width: props.battery.stateOfCharge * 50 / 100 }}></div><span>{props.battery.stateOfCharge} %</span></div>}
             <><br></br><span>capacity:</span></> {props.battery.capacity}

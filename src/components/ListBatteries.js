@@ -25,9 +25,8 @@ function ListBatteries() {
             .then(res => res.json())
             .then(response => {
                 console.log(response)
-                for (var i = 0; i<response.length;i++)
-                {
-                    switch(response[i].connectionStatusId) {
+                for (var i = 0; i < response.length; i++) {
+                    switch (response[i].connectionStatusId) {
                         case 1:
                             response[i].connectionStatusId = 'online'
                             break;
@@ -40,9 +39,8 @@ function ListBatteries() {
                         default:
                             break;
                     }
-                    for (var j = 0; j<response[i].recentIssues.length;j++)
-                    {
-                        switch(response[i].recentIssues[j]) {
+                    for (var j = 0; j < response[i].recentIssues.length; j++) {
+                        switch (response[i].recentIssues[j]) {
                             case 1:
                                 response[i].recentIssues[j] = 'deep discharge'
                                 break;
@@ -66,7 +64,7 @@ function ListBatteries() {
     }, [])
 
 
-    const handleObserver = useCallback ((batteries)=> {
+    const handleObserver = useCallback((batteries) => {
         const target = batteries[0]
         if (target.isIntersecting) {
             setPage((prev) => prev + 1)
@@ -78,7 +76,7 @@ function ListBatteries() {
             root: null,
             rootMargin: "20px",
             threshold: 0
-          };
+        };
         const observer = new IntersectionObserver(handleObserver, option)
         if (loader.current) observer.observe(loader.current)
     }, [handleObserver]);
@@ -111,7 +109,7 @@ function ListBatteries() {
     /*
     to display updated list after search terms have been applied
      */
-    var filtered = batteries.slice(page-1, page * 25);
+    var filtered = batteries.slice(page - 1, page * 25);
     if (termID) filtered = filtered.filter(bat => bat.id === termID)
     if (termLocation) filtered = filtered.filter(bat => bat.location === termLocation)
     if (termConnection) filtered = filtered.filter(bat => bat.connectionStatusId == termConnection)
@@ -119,13 +117,13 @@ function ListBatteries() {
     return (
         <div className='ListBatteries'>
             {/* conditional rendering to display the loading icon while waiting for the response from the API*/
-            loading &&
+                loading &&
                 <Spinner animation="border" role="status">
                     <span className="visually-hidden">Loading...</span>
                 </Spinner>
             }
             {/* conditional rendering so the search bar won't appear while waiting for the API response */
-            !loading &&
+                !loading &&
                 <>
                     <form ref={formRef}>
                         <SearchBar
@@ -144,8 +142,8 @@ function ListBatteries() {
                     }}>RESET</button>
                 </>
             }
-            <BatteryTable filtered={filtered} loading={loading}/>
-            <div ref={loader}/>
+            <BatteryTable filtered={filtered} loading={loading} />
+            <div ref={loader} />
         </div>
     )
 }
