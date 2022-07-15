@@ -1,7 +1,7 @@
 import '../App.css';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Spinner } from 'react-bootstrap';
+import { Spinner } from 'react-bootstrap';
 import SearchBar from './SearchBar';
 import BatteryTable from './BatteryTable';
 
@@ -15,6 +15,7 @@ function ListBatteries() {
     const [termCharge, setTermCharge] = useState(0);
     const [page, setPage] = useState(1)
     const loader = useRef(null);
+    const formRef = useRef();
 
     const url = 'https://f2byongc84.execute-api.eu-central-1.amazonaws.com/webdev_test_fetch_batteries'
     /* hook for the fetching resources from the api
@@ -82,6 +83,10 @@ function ListBatteries() {
         if (loader.current) observer.observe(loader.current)
     }, [handleObserver]);
 
+    const handleReset = () => {
+        formRef.current.reset();
+    }
+
     /*
     capacity: 50
     
@@ -122,18 +127,21 @@ function ListBatteries() {
             {/* conditional rendering so the search bar won't appear while waiting for the API response */
             !loading &&
                 <>
-                    <SearchBar
-                        handleLocChange={e => setTermLocation(e.target.value)}
-                        handleIdChange={e => setTermID(e.target.value)}
-                        handleChargeChange={e => setTermCharge(e.target.value)}
-                        handleConChange={e => setTermConnection(e.target.value)}
-                    />
-                    <Button className='button' size='sm' onClick={() => {
+                    <form ref={formRef}>
+                        <SearchBar
+                            handleLocChange={e => setTermLocation(e.target.value)}
+                            handleIdChange={e => setTermID(e.target.value)}
+                            handleChargeChange={e => setTermCharge(e.target.value)}
+                            handleConChange={e => setTermConnection(e.target.value)}
+                        />
+                    </form>
+                    <button className='button' onClick={() => {
                         setTermLocation('');
                         setTermCharge('');
                         setTermConnection('');
                         setTermID('');
-                    }}>RESET</Button>
+                        handleReset();
+                    }}>RESET</button>
                 </>
             }
             <BatteryTable filtered={filtered} loading={loading}/>

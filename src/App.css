@@ -79,6 +79,8 @@ button {
   border-radius: 3px;
   padding: .3rem 1rem;
   margin-left: .5rem;
+  width: 110px;
+  max-height: 50px;
 }
 
 .button-default {

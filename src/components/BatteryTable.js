@@ -1,23 +1,17 @@
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button } from 'react-bootstrap';
 import React, { useState } from 'react';
 import Modal from './Modal';
 
 function BatteryTable(props) {
-    const [bat, setBat] = useState({})
-    const [show, setShow] = useState(false);//for the modal with details of each individual battery
-    const [modalData, setModalData] = useState({});//to display the data of a single chosen battery in the modal
-    const [loadingbat, setLoadingbat] = useState(true)
-    /* modal */
+    const [bat, setBat] = useState({}) /* individual battery details */
+    const [loadingbat, setLoadingbat] = useState(true) /* to know if the battery details request is going through */
+    /* modal state for showing and hiding it*/
     const [isShowing, setIsShowing] = useState(false);
 
     function toggle() {
         setIsShowing(!isShowing);
     }
-    /* for individual entity view display */
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
 
     const url = 'https://f2byongc84.execute-api.eu-central-1.amazonaws.com/webdev_test_fetch_batteries?id=' //url for fetching individual battery info
     const batteryCache = new Map()
@@ -74,24 +68,30 @@ function BatteryTable(props) {
                             (battery) =>
                             (<tr key={battery.id}>
                                 <td>
-                                    <Button className='button' variant="outline-info" size='sm' onClick={() => {
-                                        //handleShow()
+                                    <button className='button' onClick={() => {
                                         toggle()
                                         setLoadingbat(true)
-                                        setModalData(battery)
                                         fetchRequest(battery.id)
                                     }}>
                                         {battery.id}
-                                    </Button>
+                                    </button>
                                 </td>
-                                <td>{battery.capacity}</td>
-                                <td>{battery.connectionStatusId}</td>
-                                <td>{battery.lastConnectionTime}</td>
-                                <td>{battery.location}</td>
-                                <td>{battery.recentIssues.join(', ')}</td>
-                                <td>{battery.stateOfCharge}</td>
-                                <td>{battery.stateOfHealth}</td>
-                                <td>{battery.voltage}</td>
+                                {battery.capacity && <td>{battery.capacity}</td>}
+                                {!battery.capacity && <td>n/a</td>}
+                                {battery.connectionStatusId && <td>{battery.connectionStatusId}</td>}
+                                {!battery.connectionStatusId && <td>n/a</td>}
+                                {battery.lastConnectionTime && <td>{battery.lastConnectionTime}</td>}
+                                {!battery.lastConnectionTime && <td>n/a</td>}
+                                {battery.location && <td>{battery.location}</td>}
+                                {!battery.location && <td>n/a</td>}
+                                {battery.recentIssues.length>0 && <td>{battery.recentIssues.join(', ')}</td>}
+                                {battery.recentIssues.length<=0 && <td>n/a</td>}
+                                {battery.stateOfCharge && <td>{battery.stateOfCharge}</td>}
+                                {!battery.stateOfCharge && <td>n/a</td>}
+                                {battery.stateOfHealth && <td>{battery.stateOfHealth}</td>}
+                                {!battery.stateOfHealth && <td>n/a</td>}
+                                {battery.voltage && <td>{battery.voltage}</td>}
+                                {!battery.voltage && <td>n/a</td>}
                             </tr>)
                         )
                     }
