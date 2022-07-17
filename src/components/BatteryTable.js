@@ -3,9 +3,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
 import Modal from './Modal';
 
+const batteryCache = new Map() /* for caching individual battery details */
+
 function BatteryTable(props) {
     const [bat, setBat] = useState({}) /* individual battery details */
     const [loadingbat, setLoadingbat] = useState(true) /* to know if the battery details request is going through */
+
     /* modal state for showing and hiding it*/
     const [isShowing, setIsShowing] = useState(false);
 
@@ -14,15 +17,13 @@ function BatteryTable(props) {
     }
 
     const url = 'https://f2byongc84.execute-api.eu-central-1.amazonaws.com/webdev_test_fetch_batteries?id=' //url for fetching individual battery info
-    const batteryCache = new Map()
-    const fetchRequest = async (id) => {
-        if (!batteryCache.has(id)) {
-            batteryCache.set(id, fetch(url + id).then(res => res.json()))
+    const fetchRequest = async (individualBattery) => {
+        if (!batteryCache.has(individualBattery)) {
+            batteryCache.set(individualBattery, fetch(url + individualBattery.id).then(res => res.json()))
         }
-        const response = await batteryCache.get(id)
+        const response = await batteryCache.get(individualBattery)
         setBat(response)
         setLoadingbat(false)
-        console.log(bat)
     }
 
     return (
@@ -71,11 +72,12 @@ function BatteryTable(props) {
                                     <button className='button' onClick={() => {
                                         toggle()
                                         setLoadingbat(true)
-                                        fetchRequest(battery.id)
+                                        fetchRequest(battery)
                                     }}>
                                         {battery.id}
                                     </button>
                                 </td>
+                                {/* conditional rendering for whenever there's data missing so we display n/a instead */}
                                 {battery.capacity && <td>{battery.capacity}</td>}
                                 {!battery.capacity && <td>n/a</td>}
                                 {battery.connectionStatusId && <td>{battery.connectionStatusId}</td>}

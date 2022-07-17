@@ -13,18 +13,18 @@ function ListBatteries() {
     const [termLocation, setTermLocation] = useState('');
     const [termConnection, setTermConnection] = useState(0);
     const [termCharge, setTermCharge] = useState(0);
+    /* for infinite scrolling pagination */
     const [page, setPage] = useState(1)
     const loader = useRef(null);
     const formRef = useRef();
 
     const url = 'https://f2byongc84.execute-api.eu-central-1.amazonaws.com/webdev_test_fetch_batteries'
-    /* hook for the fetching resources from the api
+    /* fetching resources from the api
     and iterating through the results to change some of the properties for later display on the website */
     useEffect(() => {
         fetch(url)
             .then(res => res.json())
             .then(response => {
-                console.log(response)
                 for (var i = 0; i < response.length; i++) {
                     switch (response[i].connectionStatusId) {
                         case 1:
@@ -63,7 +63,7 @@ function ListBatteries() {
             })
     }, [])
 
-
+    /* pagination */
     const handleObserver = useCallback((batteries) => {
         const target = batteries[0]
         if (target.isIntersecting) {
@@ -109,7 +109,7 @@ function ListBatteries() {
     /*
     to display updated list after search terms have been applied
      */
-    var filtered = batteries.slice(0, page * 25);
+    var filtered = batteries.slice(0, page * 25); //slicing more and more as we scroll and the page increments
     if (termID) filtered = filtered.filter(bat => bat.id === termID)
     if (termLocation) filtered = filtered.filter(bat => bat.location === termLocation)
     if (termConnection) filtered = filtered.filter(bat => bat.connectionStatusId == termConnection)
